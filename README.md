@@ -16,3 +16,5 @@ TheRing | 午夜凶铃
 SnowFlakesFlying | 下雪特效
 
 happy-new-year-page | 过年特效
+
+hubble-bubble | 泡泡特效
