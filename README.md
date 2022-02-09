@@ -28,3 +28,5 @@ butterfly | 蝴蝶飞翔特效
 Time-Compass | 时间罗盘
 
 love-paint | 画爱心
+
+clover | 四叶草
