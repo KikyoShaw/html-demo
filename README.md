@@ -32,3 +32,5 @@ love-paint | 画爱心
 clover | 四叶草
 
 fireworks | 烟花
+
+Romantic-sakura-html | 樱花特效
