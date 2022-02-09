@@ -1,6 +1,8 @@
 # html-demo
 一些HTML好看特效及网页
 
+PS：部分特效来源其他作者，如果侵权，请联系本人，谢谢。
+
 TheMatrix-One | 黑客帝国屏幕雨特效（日版）
 
 TheMatrix-Two | 黑客帝国屏幕雨特效（英版）
@@ -36,3 +38,5 @@ fireworks | 烟花
 Romantic-sakura-html | 樱花特效
 
 compass-html | 风水罗盘
+
+Sakura-tree | 流星雨下的樱花树
