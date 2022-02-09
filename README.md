@@ -20,3 +20,5 @@ happy-new-year-page | 过年特效
 hubble-bubble | 泡泡特效
 
 LoveFlying | 爱心飘落
+
+Rubik's-Cube-3d |3D翻转魔方
