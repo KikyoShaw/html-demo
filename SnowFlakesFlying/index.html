@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>雪花满屏飞</title>
+    <script src="js/jquery.js"></script>
+    <style media="screen">
+        body {
+            background: #3B3B3B url(images/bg.jpg) no-repeat center;
+            color: #ccc;
+            height: 1050px;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display:none"></div>
+    <script src="js/jq.snow.js"></script>
+    <script>
+        $(function() {
+            $.fn.snow({
+                minSize: 5, //雪花的最小尺寸
+                maxSize: 40, //雪花的最大尺寸
+                newOn: 100 //雪花出现的频率 这个数值越小雪花越多
+            });
+        });
+    </script>
+</body>
+
+</html>
