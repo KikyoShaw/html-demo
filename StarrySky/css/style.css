@@ -1,0 +1,17 @@
+@font-face
+{
+    font-family: 'Inconsolata';
+    font-weight: normal;
+    font-style: normal;
+    src: url('fonts/Inconsolata.otf');
+}
+
+body{
+  margin:0;
+  overflow:hidden;
+}
+canvas{
+  position: absolute;
+  width:100%;
+  height:100%
+}
