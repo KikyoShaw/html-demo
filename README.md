@@ -22,3 +22,5 @@ hubble-bubble | 泡泡特效
 LoveFlying | 爱心飘落
 
 Rubik's-Cube-3d |3D翻转魔方
+
+butterfly | 蝴蝶飞翔特效
