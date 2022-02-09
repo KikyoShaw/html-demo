@@ -18,3 +18,5 @@ SnowFlakesFlying | 下雪特效
 happy-new-year-page | 过年特效
 
 hubble-bubble | 泡泡特效
+
+LoveFlying | 爱心飘落
