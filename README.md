@@ -34,3 +34,5 @@ clover | 四叶草
 fireworks | 烟花
 
 Romantic-sakura-html | 樱花特效
+
+compass-html | 风水罗盘
