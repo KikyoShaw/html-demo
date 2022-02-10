@@ -42,3 +42,5 @@ compass-html | 风水罗盘
 Sakura-tree | 流星雨下的樱花树
 
 StarrySky | 宇宙星空特效
+
+VirtualCharacter | 网页上虚拟人物
