@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ch">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>樱花镇 · 月初梦深</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/colorExtention.css">
+  <link href="https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="loadingAni">
+    <iframe src="./res/loading.html" width="600" height="600" frameborder="0"> scrolling="no"</iframe>
+    <p>若您是第一次访问本页面，可能需要较长的加载时间···</p>
+  </div>
+
+  <div class="stars"></div>
+  <canvas height="888" width="1659" style="position: fixed;left: 0;top: 0;pointer-events: none;z-index:99999;"
+    id="canvas_sakura"></canvas>
+  <header class="">
+    <h1>樱花镇 · 月初梦深</h1>
+  </header>
+  <main></main>
+</body>
+<script src=" ./js/jq.min.js"></script>
+<script src='./js/stopExecutionOnTimeout.js'></script>
+<script src="./js/sakura.js"></script>
+<script src="./js/buffer.js"></script>
+<script>
+  renderStar()
+  renderColorByTime()
+  window.onload = function () {
+    $("#loadingAni").fadeOut(600);
+    $("header").addClass('animate__animated animate__fadeInDown animate__delay-1s')
+    $("main").show(0)
+    $('main').load('./pages/info.html')
+    $("main").addClass('animate__animated animate__fadeInUpBig animate__delay-1s')
+  };
+  $(function () {
+
+  })
+</script>
+
+</html>
