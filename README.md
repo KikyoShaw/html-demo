@@ -48,3 +48,5 @@ VirtualCharacter | 网页上虚拟人物
 SakuraTown | 樱花镇
 
 RpRain | 红包雨
+
+Meteor | 流星雨
