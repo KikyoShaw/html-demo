@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>做一个有背景的流星雨</title>
+</head>
+
+<style type="text/css">
+.box{
+    width: 100wh;
+    height: 100vh;
+}
+#backImg,#meteor{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#meteor{z-index: 99;}
+</style>
+<body>
+    <div class="box">
+        <canvas id="backImg">
+            你的浏览器器不支持canvas，请升级你的浏览器 
+        </canvas>
+        <canvas id="meteor">
+            你的浏览器器不支持canvas，请升级你的浏览器 
+         </canvas>
+    </div>
+<script type="text/javascript" src="./drawMeteor.js"></script>
+<script>
+    window.onload=function(){ fn() }
+    window.onresize = function () { fn()  }
+   function fn(){
+        let back=document.getElementById('backImg')
+            let meteor=document.getElementById('meteor')
+            let winWidth=window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth;
+            let winHeight=window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight;
+            back.width = winWidth;
+            back.height = winHeight;
+            meteor.width = document.body.clientWidth;
+            meteor.height = document.body.clientHeight / 3;
+            $canvas.drawImage('backImg','./img/back.jpg')
+            $canvas.drawMeteor('meteor')
+    }
+</script>
+</body>
+</html>

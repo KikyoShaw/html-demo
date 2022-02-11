@@ -50,3 +50,5 @@ SakuraTown | 樱花镇
 RpRain | 红包雨
 
 Meteor | 流星雨
+
+canvas_draw_meteor | 流星雨(带背景)
