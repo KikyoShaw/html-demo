@@ -52,3 +52,5 @@ RpRain | 红包雨
 Meteor | 流星雨
 
 canvas_draw_meteor | 流星雨(带背景)
+
+love | 爱心灯牌特效
