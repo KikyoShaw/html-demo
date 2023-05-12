@@ -1,0 +1,222 @@
+#plugin_container {
+    width:440px;
+    height:448px;
+    background:url(images/background.png) 50% 40px no-repeat;
+    position:relative;
+    overflow:hidden;
+    font-family:Arial, Verdana, Tahoma, Helvetica, sans-serif;
+    color:#fff;
+    margin: auto;
+}
+
+#plugin_container p {
+    margin:0;
+    padding:0;
+}
+
+#clock {
+    float:left;
+    margin-left:18px;
+}
+
+#hours, #minutes {
+    width:200px;
+    height:200px;
+    float:left;
+    position:relative;
+}
+
+#minutes {
+    margin-left:4px;
+}
+
+#hours_bg, #minutes_bg {
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:99;
+}
+
+.first_digit {
+    width:80px;
+    height:100%;
+    position:absolute;
+    top:0;
+    left:20px;
+    z-index:100;
+}
+
+.second_digit {
+    width:80px;
+    height:100%;
+    position:absolute;
+    top:0;
+    left:100px;
+    z-index:100;
+}
+
+.line {
+    width:175px;
+    height:2px;
+    background:#efefef;
+    position:absolute;
+    top:97px;
+    left:12px;
+    z-index:101;
+    font-size:1px;
+}
+
+#am_pm {
+    position:absolute;
+    top:156px;
+    left:130px;
+    z-index:110;
+}
+
+
+#weather {
+    width:100%;
+    height:313px;
+    position:absolute;
+    top:135px;
+    left:0;
+    z-index:105;
+    color:#fff;
+}
+
+#weather .loading {
+    float:left;
+    margin:90px 0 0 45px;
+}
+#weather #local {
+    float:left;
+    margin:66px 0 0 15px;
+}
+
+.city {
+    font-size:12pt;
+}
+.high_low {
+    font-size:25pt;
+}
+
+#normales {
+    position:relative;
+    top: -7px;
+    font-size:10pt;
+    text-align:center;
+}
+
+.normalediff {
+    background: #2a2b33;
+    border-radius: 3pt;
+    color: #FFFFFF;
+    padding: 1px 4px 1px 4px;
+}
+
+
+#weather #temp {
+    float:right;
+    margin:60px 15px 0 0;
+    text-align:right;
+}
+
+#weather #date {
+    font-size:16pt;
+    padding-right:2px;
+}
+
+.temp {
+    font-size:30pt;
+    padding:0;
+}
+
+.temp .metric {
+    margin-left:-3px;
+}
+
+
+#weather #forecast {
+    width:440px;
+    height:120px;
+    list-style:none;
+    margin:158px 0 0 0px;
+    padding:0;
+    position: relative;
+}
+
+#weather #forecast li {
+    width:25%;
+    height:100%;
+    float:left;
+    text-align:center;
+}
+
+#weather #forecast li p {
+    width:100%;
+    height:23px;
+    margin:0;
+    padding:0;
+    font-size:18pt;
+    line-height:20px;
+}
+
+#weather #forecast li .dayname {
+    font-size:12pt;
+}
+
+#weather #forecast li img {
+    width:106px;
+}
+
+#weather #forecast li .daytemp {
+    position:absolute;
+    bottom: 0px;
+    width: 25%;
+    text-align:center;
+}
+
+#weather #forecast li .pluieprevisionjour {
+    font-size:8pt;
+    text-align:left;
+    position: absolute;
+    top: 20px;
+    width: 25%;
+    color:#83C5E0;
+    z-index:99;
+}
+
+#weather #forecast li .rafalesprevisionjour {
+    font-size:8pt;
+    text-align:right;
+    position: absolute;
+    top: 20px;
+    width: 25%;
+    color:#FFFFFF;
+    z-index:99;
+}
+
+#weather #bottom {
+    text-align:right;
+    margin:3px 15px 0px 15px;
+}
+#weather #soleil {
+    text-align:left;
+    float:left;
+    font-size:20px;
+}
+
+#weather #update {
+    margin:4px 0px 0px 0px;
+    float:right;
+    text-align:right;
+    font-size:14px;
+}
+
+#weather #update img {
+    margin:-2px 4px 0 0;
+    vertical-align:middle;
+    cursor:pointer;
+}
