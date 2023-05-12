@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<style type="text/css">
+@font-face{
+  font-family: Candarab;
+  src:url('Candarab.ttf');
+}
+body{
+  background-color: #777
+}
+.witchDay{
+  background: rgb(0,0,0,0.5);
+  box-shadow: 0 0 2px #fff;
+  color: rgb(242,155,135);
+}
+.holidayColor{
+  color:rgb(242,155,135)!important;
+  font-weight: 600;
+}
+#calendarTB{
+  width: 280px;
+  text-align: center;
+  color: #fff;
+  border-collapse: 0;
+  border-spacing: 0;
+  position: fixed;
+  top:20px;
+  user-select: none;
+  z-index: 9999;
+}
+#calendarTB:hover{
+  cursor: pointer;
+  background-color: rgba(255,255,255,.3);
+}
+#calendarTB td{
+  box-sizing: border-box;
+  font-family: Candarab;
+}
+#yearDay,#Month{
+  text-align: left;
+  font-size: 30px;
+  line-height: 35px;
+}
+#Month{
+  font-size: 22px;
+}
+#nowDay{
+  text-align: center;
+  font-size: 70px;
+  line-height: 50px;
+}
+#week{
+  font-size: 12px;
+  height: 30px;
+}
+#week>td{
+  width: 40px;
+}
+.eachDay{
+  width: 40px;
+  height: 40px;
+  vertical-align: text-top;
+  word-break: break-all;
+  word-wrap:break-word;
+  position: relative;
+}
+.eachDay:hover{
+  background: rgb(0,0,0,0.5);
+  cursor: pointer;
+  box-shadow: 0 0 4px #fff;
+  color: rgb(242,155,135);
+}
+.nong{
+  font-size: 10px;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  line-height: 15px;
+  word-break: break-all;
+  word-wrap:break-word;
+}
+#holiday{
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 15px;
+  word-break: break-all;
+  word-wrap:break-word;
+}
+.eachDay::before{
+  content: attr(data-witchnongHoliday);
+  width: 100%;
+  font-size: 10px;
+  position: absolute;
+  bottom:0px;
+  left: 0px;
+}
+.lastMonthDay,.nextMonth{
+  color:#bbb;
+}
+/*背景图*/
+#beijingtu{
+  bottom: 0px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+.beijingtu{
+  width: 80%;
+  height: 70%;
+  bottom: 5px;
+}
+.beijingtuStar{
+  width: 80%;
+  height: 80%;
+  bottom: 0px;
+}
+
+/*选择日期*/
+#calendarNav{
+  font-size: 16px;
+  line-height: 50px;
+}
+#queryLeft,#queryRight{
+  font-size: 20px;
+}
+/*自定义select*/
+.calendarSelect{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  border:0;
+  outline: none;
+  text-align: center;
+  cursor: pointer;
+  background: none;
+  color:#fff;
+  position: relative;
+}
+.hiddenscroll{/*隐藏scroll*/
+  width: 100%;
+  height: 166px;
+  position: absolute;
+  z-index: 666;
+  border:1px solid #000;
+  background: rgba(0,0,0,0.8);
+  box-shadow: 0 0 4px #fff;
+  overflow: hidden;
+  display: none;
+}
+.calendarOptionBox{
+  width: calc(100% + 18px);
+  height: 166px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+.calendarOptionBox>p{
+  font-size: 15px;
+  line-height: 23px;
+  margin: -1px 0 0 0;
+  padding:3px 0; 
+  overflow: hidden;
+}
+.selected{
+  font-size: 16px;
+  box-shadow: 0 0 4px #fff;
+  color: rgb(242,155,135);
+}
+.calendarOptionBox>p:hover{
+  font-size: 16px;
+  box-shadow: 0 0 4px #fff;
+  color: rgb(242,155,135);
+}
+
+
+</style>
+<body>
+  
+</body>
+<script src="jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+  var body=document.getElementsByTagName('body')[0];
+  var cYear, cMonth, cDay,runYue,tiangandizhi,shengxiao,nongHoliday,space,monthDays,yinli,isLeep,dd;
+  var date=new Date()
+  ,getYear=date.getFullYear()
+  ,getMonth=date.getMonth()
+  ,getWeek=date.getDay()
+  ,getDate=date.getDate();
+  init(); 
+  addCalendar();
+  var nowDay=document.getElementById('nowDay')
+  ,nowYear=document.getElementById('year')
+  ,nowMonth=document.getElementById('month')
+  ,eachDay=document.getElementsByClassName('eachDay')
+  ,cut=document.getElementById('cut')
+  ,pingyue=document.getElementById('pingyue')
+  ,sanshiyi=document.getElementById('sanshiyi')
+  ,shengxiao=document.getElementById('shengxiao')
+  ,tiangandizhi=document.getElementById('tiangandizhi')
+  ,nongHoliday=document.getElementById('nongHoliday')
+  ,holiday=document.getElementById('holiday')
+  ,beijingtu=document.getElementById('beijingtu');
+  var nongli={//农历数据
+        tgString:"甲乙丙丁戊己庚辛壬癸",
+        dzString:"子丑寅卯辰巳午未申酉戌亥",
+        sx:'鼠牛虎兔龙蛇马羊猴鸡狗猪',
+        monString:'正二三四五六七八九十冬腊',
+        numString:'一二三四五六七八九十',
+        madd:[0,31,59,90,120,151,181,212,243,273,304,334],
+        CalendarData:[43856, 19416, 19168, 42352, 21717, 53856, 55632, 25940, 22191, 39632, 21970, 19168, 42422, 42192, 53840, 53845, 46415, 54944, 44450, 38320, 18807, 18815, 42160, 46261, 27216, 27968, 43860, 11119, 38256, 21234, 18800, 25958, 54432, 59984, 27285, 23263, 11104, 34531, 37615, 51415, 51551, 54432, 55462, 46431, 22176, 42420, 9695, 37584, 53938, 43344, 46423, 27808, 46416, 21333, 19887, 42416, 17779, 21183, 43432, 59728, 27296, 44710, 43856, 19296, 43748, 42352, 21088, 62051, 55632, 23383, 22176, 38608, 19925, 19152, 42192, 54484, 53840, 54616, 46400, 46752, 38310, 38335, 18864, 43380, 42160, 45690, 27216, 27968, 44870, 43872, 38256, 19189, 18800, 25776, 29859, 59984, 27480, 23232, 43872, 38613, 37600, 51552, 55636, 54432, 55888, 30034, 22176, 43959, 9680, 37584, 51893, 43344, 46240, 47780, 44368, 21977, 19360, 42416, 20854, 21183, 43312, 31060, 27296, 44368, 23378, 19296, 42726, 42208, 53856, 60005, 54576, 23200, 30371, 38608, 19195, 19152, 42192, 53430, 53855, 54560, 56645, 46496, 22224, 21938, 18864, 42359, 42160, 43600, 45653, 27951, 44448, 19299, 37759, 18936, 18800, 25776, 26790, 59999, 27424, 42692, 43759, 37600, 53987, 51552, 54615, 54432, 55888, 23893, 22176, 42704, 21972, 21200, 43448, 43344, 46240, 46758, 44368, 21920, 43940, 42416, 21168, 45683, 26928, 29495, 27296, 44368, 19285, 19311, 42352, 21732, 53856, 59752, 54560, 55968, 27302, 22239, 19168, 43476, 42192, 53584, 62034, 54560]
+    };
+    var specialDays={//节假日数据
+        star:[["白羊座",3,21,4,19], ["金牛座",4,20,5,20], ["双子座",5,21,6,21], ["巨蟹座",6,22,7,22], ["狮子座",7,23,8,22], ["处女座",8,23,9,22], ["天秤座",9,23,10,23], ["天蝎座",10,24,11,22], ["射手座",11,23,12,21], ["摩羯座",12,22,1,19], ["水瓶座",1,20,2,18], ["双鱼座",2,19,3,20]],
+        jieqi:["小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至"],
+        yangliHoliday:[[1, 1, 1,"元旦"],[2, 2, 0, "世界湿地日"],[2, 10, 0, "国际气象节"],[2, 14, 0, "情人节"],[3, 1, 0, "国际海豹日"],[3, 5, 0, "学雷锋纪念日"],[3, 8, 0, "妇女节"],[3, 12, 0, "植树节 孙中山逝世纪念日"],[3, 14, 0, "国际警察日"],[3, 15, 0, "消费者权益日"],[3, 17, 0, "中国国医节 国际航海日"],[3, 21, 0, "世界森林日 消除种族歧视国际日 世界儿歌日"],[3, 22, 0, "世界水日"],[3, 24, 0, "世界防治结核病日"],[4, 1, 0, "愚人节"],[4, 4, 1, "清明节"],[4, 7, 0, "世界卫生日"],[4, 22, 0, "世界地球日"],[5, 1, 1, "劳动节"],[5, 2, 1, "劳动节假日"],[5, 3, 1, "劳动节假日"],[5, 4, 0, "青年节"],[5, 8, 0, "世界红十字日"],[5, 12, 0, "国际护士节"],[5, 31, 0, "世界无烟日"],[6, 1, 0, "国际儿童节"],[6, 5, 0, "世界环境保护日"],[6, 26, 0, "国际禁毒日"],[7, 1, 0, "建党节 香港回归纪念 世界建筑日"],[7, 11, 0, "世界人口日"],[8, 1, 0, "建军节"],[8, 8, 0, "中国男子节 父亲节"],[8, 15, 0, "抗日战争胜利纪念"],[9, 9, 0, "  逝世纪念"],[9, 10, 0, "教师节"],[9, 18, 0, "九·一八事变纪念日"],[9, 20, 0, "国际爱牙日"],[9, 27, 0, "世界旅游日"],[9, 28, 0, "孔子诞辰"],[10, 1, 1, "国庆节 国际音乐日"],[10, 2, 1, "国庆节假日"],[10, 3, 1, "国庆节假日"],[10, 6, 0, "老人节"],[10, 24, 0, "联合国日"],[11, 10, 0, "世界青年节"],[11, 12, 0, "孙中山诞辰纪念"],[12, 1, 0, "世界艾滋病日"],[12, 3, 0, "世界残疾人日"],[12, 20, 0, "澳门回归纪念"],[12, 24, 0, "平安夜"],[12, 25, 0, "圣诞节"],[12, 26, 0, "毛泽东诞辰纪念"]],
+        yinliHoliday:[[1, 1, 1, "春节"],[1,5,0,"初五"],[1, 15, 0, "元宵节"],[5, 5, 0, "端午节"],[7, 7, 0, "七夕情人节"],[7, 15, 0, "中元节 盂兰盆节"],[8, 15, 0, "中秋节"],[9, 9, 0, "重阳节"],[10, 1, 0, "寒衣节"],[12, 8, 0, "腊八节"],[12, 23, 0, "北方小年(扫房)"],[12, 24, 0, "南方小年(掸尘)"]],
+        weekHoliday:[[5, 0, 2,  "母亲节"],[5, 0, 3, "全国助残日"],[6, 0, 3,"父亲节"],[9, 0, 4, "国际聋人节"],[10, 1, 1, "国际住房日"],[10, 2, 2, "国际减轻自然灾害日"],[11, 4, 4, "感恩节"]],
+        sTermInfo:["9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c3598082c95f8c965cc920f", "97bd0b06bdb0722c965ce1cfcc920f", "b027097bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c359801ec95f8c965cc920f", "97bd0b06bdb0722c965ce1cfcc920f", "b027097bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c359801ec95f8c965cc920f", "97bd0b06bdb0722c965ce1cfcc920f", "b027097bd097c36b0b6fc9274c91aa", "9778397bd19801ec9210c965cc920e", "97b6b97bd19801ec95f8c965cc920f", "97bd09801d98082c95f8e1cfcc920f", "97bd097bd097c36b0b6fc9210c8dc2", "9778397bd197c36c9210c9274c91aa", "97b6b97bd19801ec95f8c965cc920e", "97bd09801d98082c95f8e1cfcc920f", "97bd097bd097c36b0b6fc9210c8dc2", "9778397bd097c36c9210c9274c91aa", "97b6b97bd19801ec95f8c965cc920e", "97bcf97c3598082c95f8e1cfcc920f", "97bd097bd097c36b0b6fc9210c8dc2", "9778397bd097c36c9210c9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c3598082c95f8c965cc920f", "97bd097bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c3598082c95f8c965cc920f", "97bd097bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c359801ec95f8c965cc920f", "97bd097bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c359801ec95f8c965cc920f", "97bd097bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf97c359801ec95f8c965cc920f", "97bd097bd07f595b0b6fc920fb0722", "9778397bd097c36b0b6fc9210c8dc2", "9778397bd19801ec9210c9274c920e", "97b6b97bd19801ec95f8c965cc920f", "97bd07f5307f595b0b0bc920fb0722", "7f0e397bd097c36b0b6fc9210c8dc2", "9778397bd097c36c9210c9274c920e", "97b6b97bd19801ec95f8c965cc920f", "97bd07f5307f595b0b0bc920fb0722", "7f0e397bd097c36b0b6fc9210c8dc2", "9778397bd097c36c9210c9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bd07f1487f595b0b0bc920fb0722", "7f0e397bd097c36b0b6fc9210c8dc2", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf7f1487f595b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf7f1487f595b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf7f1487f531b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c965cc920e", "97bcf7f1487f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b97bd19801ec9210c9274c920e", "97bcf7f0e47f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "9778397bd097c36b0b6fc9210c91aa", "97b6b97bd197c36c9210c9274c920e", "97bcf7f0e47f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "9778397bd097c36b0b6fc9210c8dc2", "9778397bd097c36c9210c9274c920e", "97b6b7f0e47f531b0723b0b6fb0722", "7f0e37f5307f595b0b0bc920fb0722", "7f0e397bd097c36b0b6fc9210c8dc2", "9778397bd097c36b0b70c9274c91aa", "97b6b7f0e47f531b0723b0b6fb0721", "7f0e37f1487f595b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc9210c8dc2", "9778397bd097c36b0b6fc9274c91aa", "97b6b7f0e47f531b0723b0b6fb0721", "7f0e27f1487f595b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "9778397bd097c36b0b6fc9274c91aa", "97b6b7f0e47f531b0723b0787b0721", "7f0e27f0e47f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "9778397bd097c36b0b6fc9210c91aa", "97b6b7f0e47f149b0723b0787b0721", "7f0e27f0e47f531b0723b0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "9778397bd097c36b0b6fc9210c8dc2", "977837f0e37f149b0723b0787b0721", "7f07e7f0e47f531b0723b0b6fb0722", "7f0e37f5307f595b0b0bc920fb0722", "7f0e397bd097c35b0b6fc9210c8dc2", "977837f0e37f14998082b0787b0721", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e37f1487f595b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc9210c8dc2", "977837f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "977837f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd097c35b0b6fc920fb0722", "977837f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "977837f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "977837f0e37f14998082b0787b06bd", "7f07e7f0e47f149b0723b0787b0721", "7f0e27f0e47f531b0b0bb0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "977837f0e37f14998082b0723b06bd", "7f07e7f0e37f149b0723b0787b0721", "7f0e27f0e47f531b0723b0b6fb0722", "7f0e397bd07f595b0b0bc920fb0722", "977837f0e37f14898082b0723b02d5", "7ec967f0e37f14998082b0787b0721", "7f07e7f0e47f531b0723b0b6fb0722", "7f0e37f1487f595b0b0bb0b6fb0722", "7f0e37f0e37f14898082b0723b02d5", "7ec967f0e37f14998082b0787b0721", "7f07e7f0e47f531b0723b0b6fb0722", "7f0e37f1487f531b0b0bb0b6fb0722", "7f0e37f0e37f14898082b0723b02d5", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e37f1487f531b0b0bb0b6fb0722", "7f0e37f0e37f14898082b072297c35", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e37f0e37f14898082b072297c35", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e37f0e366aa89801eb072297c35", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f149b0723b0787b0721", "7f0e27f1487f531b0b0bb0b6fb0722", "7f0e37f0e366aa89801eb072297c35", "7ec967f0e37f14998082b0723b06bd", "7f07e7f0e47f149b0723b0787b0721", "7f0e27f0e47f531b0723b0b6fb0722", "7f0e37f0e366aa89801eb072297c35", "7ec967f0e37f14998082b0723b06bd", "7f07e7f0e37f14998083b0787b0721", "7f0e27f0e47f531b0723b0b6fb0722", "7f0e37f0e366aa89801eb072297c35", "7ec967f0e37f14898082b0723b02d5", "7f07e7f0e37f14998082b0787b0721", "7f07e7f0e47f531b0723b0b6fb0722", "7f0e36665b66aa89801e9808297c35", "665f67f0e37f14898082b0723b02d5", "7ec967f0e37f14998082b0787b0721", "7f07e7f0e47f531b0723b0b6fb0722", "7f0e36665b66a449801e9808297c35", "665f67f0e37f14898082b0723b02d5", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e36665b66a449801e9808297c35", "665f67f0e37f14898082b072297c35", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e26665b66a449801e9808297c35", "665f67f0e37f1489801eb072297c35", "7ec967f0e37f14998082b0787b06bd", "7f07e7f0e47f531b0723b0b6fb0721", "7f0e27f1487f531b0b0bb0b6fb0722"]
+    }
+  function init(){//初始化,计算这个月一号空几格,设置阳历月份的天数
+      var monthFirstDayWitchWeek=new Date(getYear+'-'+(getMonth+1)+'-1').getDay();//指定月的一号是周几
+    monthFirstDayWitchWeek==0? space=6: space=monthFirstDayWitchWeek-1;
+    //判断某年某月有多少天
+    monthDays=function(setY,setM){
+      if (setM+1==2) {//设置二月的天数
+        if((setY%4==0&setY%100!=0)||(setY%400==0)){//闰年判断
+          return 29
+        }else{
+          return 28
+          }
+      }else if ((/4|6|9|11/g.test(setM+1))) {//设置平月的天数
+        return 30
+      }else{//设置31天的月数的天数
+        return 31
+      }
+    }
+    }
+    function addCalendar(){//创建日历表
+        var fragment = document.createDocumentFragment();
+        var cTable=document.createElement('table');
+        var oDiv=document.createElement('div');
+        var howTr=Math.ceil((space+monthDays(getYear,getMonth))/7)+4;
+        function setSelect(whitchTd,starI,endI){
+          whitchTd.className = 'calendarSelect';
+          let cSpan = document.createElement('span');
+          let cHidscroll = document.createElement('div');
+          let cDiv = document.createElement('div');
+          cSpan.className = 'showOption';
+          cDiv.className = 'calendarOptionBox';
+          cHidscroll.className = 'hiddenscroll';
+          for(let i = starI; i <= endI; i++){
+            let cOption = document.createElement('p');
+            cOption.innerText = i;
+            cDiv.appendChild(cOption);
+          };
+          whitchTd.appendChild(cSpan);
+          cHidscroll.appendChild(cDiv);
+          whitchTd.appendChild(cHidscroll);
+        }
+        for (var i = 0; i < howTr; i++) {//生成行
+            var cTr=document.createElement('tr');
+            cTable.appendChild(cTr);
+            switch (i){//设置行的id等
+                case 0:cTr.id = 'calendarNav';break;
+                case 1:cTr.id='yearDay';break;
+                case 2:cTr.id='Month';break;
+                case 3:cTr.id='week';break;
+                case (howTr-1):cTr.id='trLast';break;
+            }
+            for (var j = 0; j < 7; j++) {//生成列
+                var cTd=document.createElement('td');
+                cTr.appendChild(cTd);
+                switch (i){//设置行的id等
+                    case 0:
+                        switch (j){
+                          case 0: cTd.id='queryLeft';cTd.innerText = '<';break;
+                          case 1: 
+                              cTd.id='setYear';
+                              cTd.colSpan = '2';
+                              setSelect(cTd,1900,2100);
+                            break;
+                          case 2: 
+                              cTd.id='setMonth';
+                              setSelect(cTd,1,12);
+                            break;
+                          case 3: cTd.id='queryRight';cTd.innerText = '>';;break;
+                          case 5: cTd.id='toToday';cTd.innerText = '今天';;break;
+                        };
+                        break;
+                    case 1:
+                        switch (j){
+                            case 0: cTd.id='nowDay';cTd.rowSpan='2';cTd.colSpan='2';break;
+                            case 1:cTd.id='year';cTd.colSpan='2';break;
+                            case 2:cTd.id='shengxiao';break;
+                            case 3:cTd.className='nong';cTd.id='tiangandizhi';break;
+                            case 4:cTd.className='nong holidayColor';cTd.id='nongHoliday';break;
+                        }
+                        break;
+                    case 2:
+                        switch (j){
+                            case 0:cTd.id='month';cTd.colSpan='3';break;
+                            case 1:cTd.id='holiday';cTd.className='holidayColor';cTd.colSpan='2';break;
+                        }
+                        break;
+                    case 3:
+                        switch (j){
+                            case 0:cTd.innerText='MON';break;
+                            case 1:cTd.innerText='TUE';break;
+                            case 2:cTd.innerText='WED';break;
+                            case 3:cTd.innerText='THU';break;
+                            case 4:cTd.innerText='FRI';break;
+                            case 5:cTd.innerText='SAT';break;
+                            case 6:cTd.innerText='SUN';break;
+                        }
+                        break;
+                    case (howTr - 1):
+                        switch (j){
+                            case 0:cTd.id='feirunnian';break;
+                            case 1:cTd.id='pingyue';break;
+                            case 2:cTd.id='sanshiyi';break;
+                        }
+                        break;  
+                }
+                i>3? cTd.className='eachDay':null;
+            }
+        }
+        cTable.id='calendarTB';
+        oDiv.id='beijingtu';
+        cTable.appendChild(oDiv);
+        fragment.appendChild(cTable);
+        body.appendChild(fragment);
+        //设置搜索默认当前月份
+        $('.showOption')[0].innerText = getYear + ' 年';
+        $('.showOption')[1].innerText = (getMonth+1) + ' 月';
+    };
+  //阳历年月日
+  function setYangliYearMonthDay(year,month,day){
+    nowYear.innerText = year;
+    nowMonth.innerText = ['January','February','March','April','May','June','July','August','September','October','November','December'][month].toUpperCase();
+    nowDay.innerText = day;
+  };
+  setYangliYearMonthDay(getYear,getMonth,getDate);
+  //农历部分
+  (function(){
+    function e2c(nY,nM,nD) {//获取农历日子年份和月份
+        //y年的m月有多少天（非闰月）
+        function getMonthDays(cnY,m){//65536转换成二进制1000000000000000;
+            return (nongli.CalendarData[cnY - 1899] & (65536 >> m)) ? 30 : 29
+        }
+        //y年闰哪个月，有多少天
+        function getRunMonthDays(cnY){//15转换成二进制是1111
+            var wYhD=[];
+            var witchRunYue = nongli.CalendarData[cnY - 1899] & 15;
+            wRY= witchRunYue == 15 ? 0 : witchRunYue;//润那一月,不润返回0
+            hRY= wRY? (nongli.CalendarData[cnY - 1899 + 1] & 15 === 15 ? 30 : 29) : 0;//闰月有多少天
+            wYhD.push(wRY);
+            wYhD.push(hRY);
+            return wYhD;
+        }
+        //返回农历一年的天数
+        function getYearDays(cnY) {
+            var r;
+            var t ={};
+            if (t[cnY]) {
+                return t[cnY]
+            }
+            var s = 12*29;
+            var u = nongli.CalendarData[cnY - 1899];
+            for (r = 32768; r > 8; r >>= 1) {
+                s += r & u ? 1 : 0
+            }
+            s += getRunMonthDays(cnY)[1];
+            t[cnY] = s;
+            return s
+        }
+        
+        //返回总天数
+        function getAllDays(nY,nM,nD) {
+            var x = Math.ceil((new Date(nY,nM,nD) - new Date(1899,1,10)) / 86400000);//指定data日期到1899年1月10号有多少天
+            for (var i=1899; i < 2100 && x > 0; i++) {//得到比现在年数多一年
+                x -= getYearDays(i);
+            }
+            x < 0 && (x += getYearDays(i-1), i--);//&&与运算符，当两边为true时输出后边的值,用比现在多一年的天数减去多算的天数就得到今年一共过去的天数；i是当前的农历年
+            var r = getRunMonthDays(i)[0] || false;//这里的参数应该是当前农历年份i;
+            for (var j = 1; j <= 12; j++) {//计算农历每月过去的天数；最后j是当前农历月，x+1是当前农历日
+                allMonthDays=getMonthDays(i,j);
+                if (r+1 === j) {
+                    r = 100;//就是为了把if关掉
+                    j--;
+                    allMonthDays=getRunMonthDays(i)[1];
+              var isRun=j;
+                }
+                if (x <= allMonthDays) break;
+                x-=allMonthDays;
+            }
+           x==0? (j=12)+(x=dd):null;//查补缺陷:每年的最后一天cDay=0,修改回来
+            cYear=i;cMonth=j;cDay=x;runYue=isRun;
+        };
+        getAllDays(nY,nM,nD);
+        //判断这一年农历十二月多少天emmmmmmmm试了很多地方就放这里管用
+        isLeep=nongli.CalendarData[cYear - 1899] & (65536 >> 12);
+      dd= Boolean(isLeep)? 30:29;
+    }
+    
+    function GetcDateString() {//设置农历生肖月份日子等
+      var temp=[];
+        //设置天干地支
+        tGdZ=nongli.tgString.charAt((cYear - 4) % 10)+nongli.dzString.charAt((cYear - 4) % 12);
+        tiangandizhi.innerText=tGdZ;
+        //设置生肖
+        sx=nongli.sx.charAt((cYear - 4) % 12);
+        shengxiao.innerText=sx;
+        //设置月
+        yue = nongli.monString.charAt(cMonth-1)+'月';
+        if (cMonth==runYue&&cDay==1) yue='闰'+yue;
+        //设置日
+        ri = (cDay < 11) ? "初" : ((cDay < 20) ? "十" : ((cDay < 30) ? "廿" : "三十"));
+        if (cDay==20) ri='二十';
+        if (cDay % 10 != 0 || cDay == 10) ri += nongli.numString.charAt((cDay - 1) % 10);
+        cDay==1? ri=yue:null;//初一显示月份
+        return [tGdZ,sx,yue,ri];
+    }
+    //判断年份是否在数据表内，如果不在现有的数据内返回空值
+    yinli=function (nY, nM, nD) {
+        if (nY < 1900 || nY > 2100) {
+            return '';
+        } else {
+            nM = (parseInt(nM) > 0) ? (nM - 1) : 11;
+            e2c(nY,nM,nD);
+            GetcDateString();
+            return [tGdZ,sx,yue,ri];
+        }
+    }
+  }());
+
+  //往表格里添加阳历和农历
+  function addMonthDay(num,nY,nM,nD){
+    (function(){//上个月在表格里的日子
+      nM<0? (nY-=1)+(nM=11):null;
+      var lastMonth=[];
+      for (var j = monthDays(nY,nM-1); j >=monthDays(nY,nM-1)-space+1; j--) {
+        lastMonth.unshift(j);
+      }
+      for (var i = 0; i < space; i++) {
+        var sss=yinli(nY,nM,lastMonth[i])[3];
+        eachDay[i].innerText=lastMonth[i];//添加阳历日子
+        eachDay[i].setAttribute('data-witchnongHoliday',sss);//添加农历日子
+        eachDay[i].className='eachDay lastMonthDay';
+        //为每一天添加年月日以及农历月日
+        Y=nY;M=nM;
+        M==0? (Y=nY-1)+(M=12):null;
+        eachDay[i].year=Y;
+        eachDay[i].month=M;
+        eachDay[i].day=lastMonth[i];
+        eachDay[i].cmonth=cMonth;
+        eachDay[i].cday=cDay;
+      }
+    }());
+    (function(){//这个月的日子
+      for (var i = 0; i < num; i++) {
+        var sss=yinli(nY,nM+1,i+1)[3];
+        eachDay[i+space].innerText=i+1+'\n';
+        eachDay[i+space].setAttribute('data-witchnongHoliday',sss);
+        eachDay[i+space].innerText==nD? eachDay[i+space].className='eachDay witchDay':null;
+        //为每一天添加年月日及农历月日
+        eachDay[i+space].year=nY;
+        eachDay[i+space].month=nM+1;
+        eachDay[i+space].day=i+1;
+        eachDay[i+space].cmonth=cMonth;
+        eachDay[i+space].cday=cDay;
+      }
+    }());
+    (function(){//下个月在表格的日子
+      nM>=11? (nY+=1)+(nM=0)+(M=nM+1):M=nM+2;
+      for (var i = 0; i < eachDay.length-num-space; i++) {
+        var sss=yinli(nY,nM+1,i+1)[3];
+        eachDay[num+space+i].innerText=i+1+'\n';
+        eachDay[num+space+i].setAttribute('data-witchnongHoliday',sss);
+        eachDay[num+space+i].className='eachDay nextMonth';
+        //为每一天添加年月日及农历月日
+        eachDay[i+space+num].year=nY;
+        eachDay[i+space+num].month=M;
+        eachDay[i+space+num].day=i+1;
+        eachDay[i+space+num].cmonth=cMonth;
+        eachDay[i+space+num].cday=cDay;
+      }
+    }())
+  };
+  addMonthDay(monthDays(getYear,getMonth),getYear,getMonth,getDate);
+    
+  //节假日
+  function setHoliday(year,month,day){
+    let yangH=specialDays.yangliHoliday;
+    let yinH=specialDays.yinliHoliday;
+    let weekH=specialDays.weekHoliday;
+    let nowWitchDay = document.getElementsByClassName('witchDay')[0];
+    let nowmonth = nowWitchDay.cmonth;
+    let nowday = nowWitchDay.cday; 
+    //设置节气
+    function solarTerms(nY,nM,nD,witchHoliday){
+      witchHoliday.innerText='';
+      let v = specialDays.sTermInfo[nY-1900];
+      let hex = [];
+      var q;
+      let sJieqi=specialDays.jieqi;
+      for (let i=0; i < 30; i += 5) {//处理节气表数据
+          q = (+("0x" + v.substr(i, 5))).toString();
+          hex.push(q.substr(0, 1));
+          hex.push(q.substr(1, 2));
+          hex.push(q.substr(3, 1));
+          hex.push(q.substr(4, 2));
+      }
+      for (let i = 0; i < sJieqi.length; i++) {//判断是当前日期是否为节气，如果是就填进节日框
+        if(Math.ceil((i+1)/2)==nM&&nD==hex[i]){
+           witchHoliday.innerText=sJieqi[i];
+        }
+      }
+    }
+    //设置节假日
+    function holidays(witchLifa,witchMonth,witchDay,witchHoliday,witchYear){//节假日函数
+      witchHoliday.innerText = '';
+      for (let i = 0; i < witchLifa.length; i++) {
+        if(witchMonth==witchLifa[i][0]&&witchDay==witchLifa[i][1]){
+            witchHoliday.innerText = witchLifa[i][3];//将节假日填入相应的表格
+        }
+        if (witchLifa == weekH) {//按周计算的节日
+          if (witchMonth==weekH[i][0] && Math.ceil(witchDay/7) == weekH[i][2]) {
+            let week = new Date(witchYear+'-'+witchMonth+'-'+witchDay).getDay();
+            week == weekH[i][1]? witchHoliday.innerText = weekH[i][3]:null;
+          }
+        }
+      }
+    }
+    function holidayDone(month,day,cmonth,cday,year){//设置节假日函数
+      holiday.innerText = '';nongHoliday.innerText = '';
+      if (holiday.innerText === '') {
+        holidays(yangH,month,day,holiday);//阳历节日
+        if (holiday.innerText === '') {
+          holidays(weekH,month,day,holiday,year)//按第几周星期几的节日
+        }
+      }
+      if (nongHoliday.innerText === '') {
+        cmonth==12&&cday==dd? nongHoliday.innerText="除夕":null//添加除夕
+        if (nongHoliday.innerText === '') {
+          solarTerms(year,month,day,nongHoliday);//节气
+          if (nongHoliday.innerText === '') {
+            holidays(yinH,cmonth,cday,nongHoliday)//农历节日
+          }
+        }
+      }
+    }
+    holidayDone(month+1,day,nowmonth,nowday,year);
+    //添加背景图片
+    function addBgImg(){
+      //添加生肖背景图
+      shengxiao.onmouseover=function(){
+        beijingtu.style.backgroundImage='url("http://wellwin.top/wp-content/uploads/2019/12/'+sx+'.png")';
+        beijingtu.className='beijingtu';
+      }
+      shengxiao.onmouseout=function(){
+        beijingtu.className='';
+      }
+      //添加星座背景图
+      function star(Y,M,D){//获取星座背景图函数
+        let star = specialDays.star;
+        let now =+ new Date(Y,M,D);
+        for (let i = 0; i < 12; i++) {
+          let supTim=+new Date(Y,star[i][1],star[i][2]);
+          let subTim=+new Date(Y,star[i][3],star[i][4]);
+          if(now>=supTim&&now<=subTim){
+             return star[i][0];
+          }
+        } 
+      }
+      //鼠标移动到每一天,设置当前日子的星座背景图,当前日子的节假日
+      for (let i = 0; i < eachDay.length; i++) {
+        eachDay[i].onmouseover=function(){
+          let xingzuo=star(this.year,this.month,this.day);
+          (this.month==12&&this.day>=22)||(this.month==1&&this.day<=19)? xingzuo='摩羯座' :null;
+          beijingtu.style.backgroundImage='url("http://wellwin.top/wp-content/uploads/2020/05/'+xingzuo+'.png")';
+          beijingtu.className='beijingtuStar';
+          //鼠标移动的时候每一天的节假日
+          holidayDone(this.month,this.day,this.cmonth,this.cday,this.year);
+        }
+        eachDay[i].onmouseout=function(){
+          beijingtu.className='';
+          holidayDone(month+1,day,nowmonth,nowday,year);
+        }
+      }
+    };
+    addBgImg();
+  };
+  setHoliday(getYear,getMonth,getDate);
+
+  //设置查看日期
+  let selectYearFlg = true;let selectMonthFlg = true;
+  $('.calendarSelect').on('mouseover',function(){
+    this.children[1].style.display = 'block';
+  })
+  $('.calendarSelect').on('mouseenter',function(){
+    //根据选择日期的内容改变option位置和样式
+    var selOpt = this.children[1].children[0].children;
+    var selSpanText = parseInt($(this.children[0]).text());
+    $(this.children[1].children[0].children).removeClass();
+    $(this.children).removeClass('selected');
+    for(let i = 0; i < selOpt.length; i++){
+      if (selOpt[i].innerText == selSpanText) {
+        $(selOpt[i]).addClass('selected');//为被选择的选项添加样式
+        let num = $(selOpt[i]).index()-4 > 0? $(selOpt[i]).index()-2 : 0;
+        selOpt[i].parentNode.scrollTop = 27 * num;
+      }
+    }
+  })
+  $('.calendarSelect').on('mouseout',function(){
+    this.children[1].style.display = 'none';
+  })
+  //点击选择日期时重绘日历表部分和节假日以及日历头部分
+  function recreateTr(year,month){//重新加载日历表
+    //删除当前月份
+    $('#calendarTB tr:gt(3)').remove();
+    //添加选中月份
+    var thisYear = year || parseInt($('.showOption')[0].innerText);
+    var thisMonth = month || parseInt($('.showOption')[1].innerText)
+    var monthFirstDayWitchWeek=new Date(thisYear + '-' + thisMonth + '-1').getDay();//指定月的一号是周几
+    space = monthFirstDayWitchWeek==0?  6 : monthFirstDayWitchWeek-1;
+    var howTr = Math.ceil((space + monthDays(thisYear,thisMonth-1))/7);
+    var fragmentMonth = document.createDocumentFragment();
+    for(let i = 0; i < howTr; i++){
+      var cTr = document.createElement('tr');
+      for(let j = 0; j < 7; j++){
+        var cTd = document.createElement('td');
+        cTd.className = 'eachDay';
+        cTr.appendChild(cTd);
+      }
+      fragmentMonth.appendChild(cTr)
+    }
+    $('#calendarTB')[0].appendChild(fragmentMonth);
+    //执行方法
+    setYangliYearMonthDay(thisYear,thisMonth-1,getDate);//设置阳历年月日
+    addMonthDay(monthDays(thisYear,thisMonth-1),thisYear,thisMonth-1,getDate);//设置生肖天干地支和每一日对应的农历
+    setHoliday(thisYear,thisMonth-1,getDate);
+  }
+  //点击选择日期
+  $('.calendarOptionBox p').on('click',function(){
+    //设置选择框
+    let text = this.innerText >= 1900? this.innerText + ' 年':this.innerText + ' 月'; //判断点击的是年还是月
+    this.parentNode.parentNode.parentNode.children[0].innerText = text;//点击选择年月
+    $(this.parentNode.children).removeClass('selected');
+    $(this).addClass('selected');//为被选择的选项添加样式
+    let num = $(this).index()-4 > 0? $(this).index()-2:0;
+    this.parentNode.scrollTop = 27 * num;//选框内容滚动相应距离
+    this.parentNode.parentNode.style.display = 'none';//点击后选框消失
+    //重新生成日历表
+    recreateTr();
+    return false;
+  })
+  //点击左右键选择日期
+  $('#queryLeft,#queryRight').on('click',function(){
+    //点击设置日志发生变化
+    var yearText = parseInt($('.showOption')[0].innerText);
+    var monthText = parseInt($('.showOption')[1].innerText);
+    if (this.id == 'queryRight') {//点击右箭头
+      if (monthText >= 12) {
+        $('.showOption')[0].innerText = yearText < 2100? yearText + 1 + ' 年' : '超出年限';
+        monthText = 0;
+      }
+      $('.showOption')[1].innerText = $('.showOption')[0].innerText == '超出年限'? '---' : monthText + 1 + ' 月';
+    }
+    if (this.id == 'queryLeft') {//点击左箭头
+      if (monthText <= 1) {
+        $('.showOption')[0].innerText = yearText > 1900? yearText - 1 + ' 年' : $('.showOption')[0].innerText = '超出年限';
+        monthText = 13;
+      }
+      $('.showOption')[1].innerText = $('.showOption')[0].innerText == '超出年限'? '---' :  monthText - 1 + ' 月';
+    }
+    //重新生成日列表
+    recreateTr();
+  })
+  //点击回到今天
+  $('#toToday').on('click',function(){
+    $('.showOption')[0].innerText = getYear + ' 年';
+    $('.showOption')[1].innerText = getMonth + 1 + ' 月'
+    recreateTr(getYear,getMonth+1);
+  })
+</script>
+</html>
